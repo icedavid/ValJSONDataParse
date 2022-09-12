@@ -54,6 +54,7 @@ def saveJSONDataByUuid(dic):
     f.close()
 
 # @brief: 根据displayIcon去下载对应的图片
+# 用关键字themeUuid去创建对应的文件夹，存入对应的目录下
 def downLoadAllIcon(dic):
     if dic:
         for item in dic:
