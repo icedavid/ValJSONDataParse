@@ -1,8 +1,7 @@
 import SkinImage
 
 def main():
-    SkinImage.main()
-    SkinImage.downLoadAllIcon()
+    SkinImage.start()
 
 if __name__ == '__main__':
     main()

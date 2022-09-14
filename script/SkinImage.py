@@ -1,12 +1,15 @@
-
-import requests
 import json
+import os
+
+import Tools
 
 from logging import exception
 from pprint import pprint
 
 _SkinURL = "https://valorant-api.com/v1/weapons/skins"
 _SkinURLJSONPath = "..\\json\\skin.json"
+_TIMEOUT = 10
+_RES_PATH = '../res/'
 SkinDic = None
 
 ''' 
@@ -16,11 +19,12 @@ SkinDic = None
         + √ @API saveJSONDataByUuid
             解析json数据保存到本地上，建立字典（key为uuid）去存储皮肤信息
         + @API downLoadAllIcon遍历数据的icon地址去下载到本地保存
-            + 用themeUuid去建立文件夹保存对应系列的皮肤
+            + 用themeUuid去建立文件夹保存对应系列的皮肤，暂定接口为createDirByThemeUuid
 '''
-def main():
+def start():
     jsonData = getJSONDataByUrl(_SkinURL)
     saveJSONDataByUuid(jsonData)
+    createDirByThemeUuid(jsonData)
     downLoadAllIcon(jsonData)
 
 # @brief: 通过API获取JSON数据
@@ -29,16 +33,19 @@ def getJSONDataByUrl(url):
         print("@getJSONDataByUrl url is null!!!!")
         return None
 
-    f = requests.get(url)
+    f = Tools.getContentByUrl(url, _TIMEOUT)
 
     # 这里直接解析为python对象
-    jsonData = f.json()
-    if jsonData:
-        if jsonData['status'] == 200:
-            return jsonData['data']
-        else:
-            print("状态码为：" + jsonData['status'] +  "，获取数据失败")
-            return None
+    if f:
+        jsonData = f.json()
+        if jsonData:
+            if jsonData['status'] == 200:
+                return jsonData['data']
+            else:
+                print("状态码为：" + jsonData['status'] +  "，获取数据失败")
+                return None
+    else:
+        assert("解析Url地址失败，请稍后重试！")
 
 # @brief: 将转换的key为uuid的skin.json保存到本地中
 def saveJSONDataByUuid(dic):
@@ -53,14 +60,27 @@ def saveJSONDataByUuid(dic):
     f.write(encodeData)
     f.close()
 
+# @brief: 根据ThemeUuid来创建文件夹
+def createDirByThemeUuid(dic):
+    if dic:
+        for item in dic:
+            if item['themeUuid']:
+                path = '../res/skin/' + item['themeUuid']
+                folder = os.path.exists(path)
+                # 目录下存在了该文件夹就跳过
+                if not folder:
+                    os.makedirs(path, True)
+                    print("%s 文件夹创建成功！", item['themeUuid'])
+
+
 # @brief: 根据displayIcon去下载对应的图片
 # 用关键字themeUuid去创建对应的文件夹，存入对应的目录下
 def downLoadAllIcon(dic):
     if dic:
         for item in dic:
             if item['displayIcon']:
-                pic = requests.get(item['displayIcon'], timeout = 5)
-                picName = "../res/skinIcon/" + item['uuid'] + '.jpg'
+                pic = Tools.getContentByUrl(item['displayIcon'], _TIMEOUT)
+                picName = "../res/skin/" + item['themeUuid'] + '/' + item['uuid'] + '.jpg'
                 fp = open(picName, 'wb')
                 fp.write(pic.content)
                 fp.close()
