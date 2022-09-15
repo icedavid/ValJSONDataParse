@@ -10,7 +10,6 @@ _SkinURL = "https://valorant-api.com/v1/weapons/skins"
 _SkinURLJSONPath = "..\\json\\skin.json"
 _TIMEOUT = 10
 _RES_PATH = '../res/'
-SkinDic = None
 
 ''' 
     @brief: 主函数处理流程
@@ -25,7 +24,7 @@ def start():
     jsonData = getJSONDataByUrl(_SkinURL)
     saveJSONDataByUuid(jsonData)
     createDirByThemeUuid(jsonData)
-    downLoadAllIcon(jsonData)
+    # downLoadAllIcon(jsonData)
 
 # @brief: 通过API获取JSON数据
 def getJSONDataByUrl(url):
@@ -64,13 +63,26 @@ def saveJSONDataByUuid(dic):
 def createDirByThemeUuid(dic):
     if dic:
         for item in dic:
-            if item['themeUuid']:
-                path = '../res/skin/' + item['themeUuid']
-                folder = os.path.exists(path)
-                # 目录下存在了该文件夹就跳过
-                if not folder:
-                    os.makedirs(path, True)
-                    print("%s 文件夹创建成功！", item['themeUuid'])
+            if item['displayIcon']:
+                if item['themeUuid']:
+                    path = '../res/skin/' + item['themeUuid']
+                    folder = os.path.exists(path)
+                    # 存在文件夹就跳过，没有就创建
+                    if not folder:
+                        os.makedirs(path, True)
+                        print("%s 文件夹创建成功！", item['themeUuid'])
+
+                # 下载文件，保存到本地中,先检查文件是否存在
+                picName = "../res/skin/" + item['themeUuid'] + '/' + item['uuid'] + '.jpg'
+                picFile = os.path.exists(picName)
+                if picFile:
+                    print("{}文件已存在！".format(picName))
+                else:
+                    pic = Tools.getContentByUrl(item['displayIcon'], _TIMEOUT)
+                    if pic.content:
+                        fp = open(picName, 'wb')
+                        fp.write(pic.content)
+                        fp.close()
 
 
 # @brief: 根据displayIcon去下载对应的图片
@@ -81,7 +93,8 @@ def downLoadAllIcon(dic):
             if item['displayIcon']:
                 pic = Tools.getContentByUrl(item['displayIcon'], _TIMEOUT)
                 picName = "../res/skin/" + item['themeUuid'] + '/' + item['uuid'] + '.jpg'
-                fp = open(picName, 'wb')
-                fp.write(pic.content)
-                fp.close()
+                if pic.content:
+                    fp = open(picName, 'wb')
+                    fp.write(pic.content)
+                    fp.close()
 
