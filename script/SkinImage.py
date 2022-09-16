@@ -31,24 +31,24 @@ def init():
         os.makedirs(_RES_PATH, True)
 
 # @brief: 通过API获取JSON数据
-def getJSONDataByUrl(url):
-    if not url:
-        # print("@getJSONDataByUrl url is null!!!!")
-        return None
+# def getJSONDataByUrl(url):
+#     if not url:
+#         # print("@getJSONDataByUrl url is null!!!!")
+#         return None
 
-    f = Tools.getContentByUrl(url, _TIMEOUT)
+#     f = Tools.getContentByUrl(url, _TIMEOUT)
 
-    # 这里直接解析为python对象
-    if f:
-        jsonData = f.json()
-        if jsonData:
-            if jsonData['status'] == 200:
-                return jsonData['data']
-            else:
-                # print("状态码为：" + jsonData['status'] +  "，获取数据失败")
-                return None
-    else:
-        assert("解析Url地址失败，请稍后重试！")
+#     # 这里直接解析为python对象
+#     if f:
+#         jsonData = f.json()
+#         if jsonData:
+#             if jsonData['status'] == 200:
+#                 return jsonData['data']
+#             else:
+#                 # print("状态码为：" + jsonData['status'] +  "，获取数据失败")
+#                 return None
+#     else:
+#         assert("解析Url地址失败，请稍后重试！")
 
 # @brief: 将转换的key为uuid的skin.json保存到本地中
 def saveJSONDataByUuid(dic):
@@ -111,7 +111,7 @@ def downLoadAllIcon(dic):
 def start():
     star = time.time()
     init()
-    jsonData = getJSONDataByUrl(_SkinURL)
+    jsonData = Tools.getJSONDataByUrl(_SkinURL)
     saveJSONDataByUuid(jsonData)
     createDirByThemeUuid(jsonData)
     over = time.time()
