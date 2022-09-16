@@ -1,5 +1,8 @@
+import time
 import json
 import os
+
+from tqdm import tqdm
 
 import Tools
 
@@ -20,16 +23,17 @@ _RES_PATH = '../res/'
         + @API downLoadAllIcon遍历数据的icon地址去下载到本地保存
             + 用themeUuid去建立文件夹保存对应系列的皮肤，暂定接口为createDirByThemeUuid
 '''
-def start():
-    jsonData = getJSONDataByUrl(_SkinURL)
-    saveJSONDataByUuid(jsonData)
-    createDirByThemeUuid(jsonData)
-    # downLoadAllIcon(jsonData)
+
+# @brief: 初始化，目录下创建一些默认没有的文件夹
+def init():
+    resPath = os.path.exists(_RES_PATH)
+    if not resPath:
+        os.makedirs(_RES_PATH, True)
 
 # @brief: 通过API获取JSON数据
 def getJSONDataByUrl(url):
     if not url:
-        print("@getJSONDataByUrl url is null!!!!")
+        # print("@getJSONDataByUrl url is null!!!!")
         return None
 
     f = Tools.getContentByUrl(url, _TIMEOUT)
@@ -41,7 +45,7 @@ def getJSONDataByUrl(url):
             if jsonData['status'] == 200:
                 return jsonData['data']
             else:
-                print("状态码为：" + jsonData['status'] +  "，获取数据失败")
+                # print("状态码为：" + jsonData['status'] +  "，获取数据失败")
                 return None
     else:
         assert("解析Url地址失败，请稍后重试！")
@@ -61,28 +65,34 @@ def saveJSONDataByUuid(dic):
 
 # @brief: 根据ThemeUuid来创建文件夹
 def createDirByThemeUuid(dic):
-    if dic:
-        for item in dic:
-            if item['displayIcon']:
-                if item['themeUuid']:
-                    path = '../res/skin/' + item['themeUuid']
-                    folder = os.path.exists(path)
-                    # 存在文件夹就跳过，没有就创建
-                    if not folder:
-                        os.makedirs(path, True)
-                        print("%s 文件夹创建成功！", item['themeUuid'])
+    skinDoc = os.path.exists(_RES_PATH + 'skin')
+    if not skinDoc:
+        os.makedirs(_RES_PATH + 'skin')
 
-                # 下载文件，保存到本地中,先检查文件是否存在
-                picName = "../res/skin/" + item['themeUuid'] + '/' + item['uuid'] + '.jpg'
-                picFile = os.path.exists(picName)
-                if picFile:
-                    print("{}文件已存在！".format(picName))
-                else:
-                    pic = Tools.getContentByUrl(item['displayIcon'], _TIMEOUT)
-                    if pic.content:
-                        fp = open(picName, 'wb')
-                        fp.write(pic.content)
-                        fp.close()
+    if dic:
+        for t in tqdm(range(100)):
+            for item in dic:
+                if item['displayIcon']:
+                    if item['themeUuid']:
+                        path = '../res/skin/' + item['themeUuid']
+                        folder = os.path.exists(path)
+                        # 存在文件夹就跳过，没有就创建
+                        if not folder:
+                            os.makedirs(path, True)
+                            # print("%s 文件夹创建成功！", item['themeUuid'])
+
+                    # 下载文件，保存到本地中,先检查文件是否存在
+                    picName = "../res/skin/" + item['themeUuid'] + '/' + item['uuid'] + '.jpg'
+                    picFile = os.path.exists(picName)
+                    if picFile:
+                        # print("{}文件已存在！".format(item['uuid']))
+                        {}
+                    else:
+                        pic = Tools.getContentByUrl(item['displayIcon'], _TIMEOUT)
+                        if pic.content:
+                            fp = open(picName, 'wb')
+                            fp.write(pic.content)
+                            fp.close()
 
 
 # @brief: 根据displayIcon去下载对应的图片
@@ -98,3 +108,11 @@ def downLoadAllIcon(dic):
                     fp.write(pic.content)
                     fp.close()
 
+def start():
+    star = time.time()
+    init()
+    jsonData = getJSONDataByUrl(_SkinURL)
+    saveJSONDataByUuid(jsonData)
+    createDirByThemeUuid(jsonData)
+    over = time.time()
+    print("总耗时：{}".format(over - star))
