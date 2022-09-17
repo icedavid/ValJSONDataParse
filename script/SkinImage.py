@@ -22,33 +22,9 @@ _RES_PATH = '../res/'
             解析json数据保存到本地上，建立字典（key为uuid）去存储皮肤信息
         + @API downLoadAllIcon遍历数据的icon地址去下载到本地保存
             + 用themeUuid去建立文件夹保存对应系列的皮肤，暂定接口为createDirByThemeUuid
+
+        @Tips: 目前使用到的工具类都放入到Tools中，这样其他脚本写的时候就直接对应相关api就好，避免重复造轮子
 '''
-
-# @brief: 初始化，目录下创建一些默认没有的文件夹
-def init():
-    resPath = os.path.exists(_RES_PATH)
-    if not resPath:
-        os.makedirs(_RES_PATH, True)
-
-# @brief: 通过API获取JSON数据
-# def getJSONDataByUrl(url):
-#     if not url:
-#         # print("@getJSONDataByUrl url is null!!!!")
-#         return None
-
-#     f = Tools.getContentByUrl(url, _TIMEOUT)
-
-#     # 这里直接解析为python对象
-#     if f:
-#         jsonData = f.json()
-#         if jsonData:
-#             if jsonData['status'] == 200:
-#                 return jsonData['data']
-#             else:
-#                 # print("状态码为：" + jsonData['status'] +  "，获取数据失败")
-#                 return None
-#     else:
-#         assert("解析Url地址失败，请稍后重试！")
 
 # @brief: 将转换的key为uuid的skin.json保存到本地中
 def saveJSONDataByUuid(dic):
@@ -94,7 +70,6 @@ def createDirByThemeUuid(dic):
                             fp.write(pic.content)
                             fp.close()
 
-
 # @brief: 根据displayIcon去下载对应的图片
 # 用关键字themeUuid去创建对应的文件夹，存入对应的目录下
 def downLoadAllIcon(dic):
@@ -110,9 +85,12 @@ def downLoadAllIcon(dic):
 
 def start():
     star = time.time()
-    init()
+    Tools.initResDir(_RES_PATH)
     jsonData = Tools.getJSONDataByUrl(_SkinURL)
-    saveJSONDataByUuid(jsonData)
-    createDirByThemeUuid(jsonData)
+    Tools.saveJSONData(_SkinURLJSONPath, jsonData, 'uuid')
+
+    if jsonData:
+        # saveJSONDataByUuid(jsonData)
+        createDirByThemeUuid(jsonData)
     over = time.time()
-    print("总耗时：{}".format(over - star))
+    print("SkinImage总耗时：{}".format(over - star))

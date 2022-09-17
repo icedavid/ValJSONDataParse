@@ -1,5 +1,6 @@
 import SkinImage
 import SkinTheme
+import Tools
 
 def main():
     SkinImage.start()
