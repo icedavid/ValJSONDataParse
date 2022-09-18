@@ -1,10 +1,15 @@
 # @desc: 纯纯工具类,需要添加的工具类组件全部放这里统一调用
-from base64 import encode
+from operator import truediv
+import time
 import json
 import requests
 import os
 
+from base64 import encode
+from tqdm import tqdm
+
 _TIMEOUT = 10
+_GRANTIME = 100
 
 _DefalutSavePath = "../res/local"
  
@@ -54,6 +59,7 @@ def saveJSONData(save_path, data_list, key_name):
     f.write(encode_data)
     f.close()
 
+# @brief: 根据key_name创建对应的文件夹
 def createDirByKey(data, dir_path, key_name):
     if not dir_path:
         print("createDirByThemeUuid dir_path is empty!!!")
@@ -67,8 +73,35 @@ def createDirByKey(data, dir_path, key_name):
         os.makedirs(dir_path)
 
     if data:
-        for item in data:
-            if item[key_name]:
-                path = dir_path + item[key_name]
-                if not os.path.exists(path):
-                    os.makedirs(path, True)
+        for i in tqdm(range(_GRANTIME)):
+            for item in data:
+                if item[key_name]:
+                    path = dir_path + item[key_name]
+                    if not os.path.exists(path):
+                        os.makedirs(path, True)
+
+# @breif: 下载的数据保存到指定的目录下,文件是否创建成功返回bool值
+def saveFile(path, data):
+    # 目录没有就创建
+    if path:
+        if not os.path.exists(path):
+            os.makedirs(path, True)
+
+    if data:
+        fp = open()
+        fp.write(data)
+        fp.close()
+        return True
+    else:
+        return False
+
+# @beidf: 计算程序的执行时间,callback 是要检测的函数,desc是添加的打印
+def calculateTime(callback, desc):
+    if callback:
+        desc = desc or "Tools.calculateTime "
+        start_time = time.time()
+        callback()
+        over_time = time.time()
+        print("{}总耗时：{}".format(desc, over_time - start_time))
+    else:
+        print("Not callback function is not allow!!!")

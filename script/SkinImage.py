@@ -84,13 +84,8 @@ def downLoadAllIcon(dic):
                     fp.close()
 
 def start():
-    star = time.time()
-    Tools.initResDir(_RES_PATH)
     jsonData = Tools.getJSONDataByUrl(_SkinURL)
     Tools.saveJSONData(_SkinURLJSONPath, jsonData, 'uuid')
 
     if jsonData:
-        # saveJSONDataByUuid(jsonData)
         createDirByThemeUuid(jsonData)
-    over = time.time()
-    print("SkinImage总耗时：{}".format(over - star))
