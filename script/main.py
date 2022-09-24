@@ -1,5 +1,6 @@
 import SkinImage
 import SkinTheme
+import SkinBundles
 import Tools
 
 _RES_PATH = '../res/'
@@ -18,6 +19,7 @@ def main():
 
     # SkinImage.start()
     # SkinTheme.start()
+    SkinBundles.start()
 
 
 if __name__ == '__main__':

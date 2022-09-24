@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 _TIMEOUT = 10
 _GRANTIME = 100
-
+_RES_PATH = "../res/"
 _DefalutSavePath = "../res/local"
  
 # @brief: 初始化资源路径
@@ -54,7 +54,7 @@ def saveJSONData(save_path, data_list, key_name):
                 key = item_data[key_name]
                 temp_list[key] = item_data
     
-    encode_data  = temp_list or data_list
+    encode_data  = json.dumps(temp_list or data_list)
     f = open(save_path, 'w')
     f.write(encode_data)
     f.close()
@@ -105,3 +105,22 @@ def calculateTime(callback, desc):
         print("{}总耗时：{}".format(desc, over_time - start_time))
     else:
         print("Not callback function is not allow!!!")
+
+# @brief: full_file_name 是包括后缀名完整文件名
+def downLoadFile(url, save_path, full_file_name):
+    if not save_path:
+        assert("Tools downLoadFile params save_path is empty!!!")
+        return
+    
+    if not full_file_name:
+        assert("Tools downLoadFile params full_file_name is empty!!!")
+        return
+
+    if url:
+        pic = getContentByUrl(url, _TIMEOUT)
+        if pic.content:
+            fp = open(full_file_name, "wb")
+            fp.write(pic.content)
+            fp.close()
+
+        
