@@ -1,7 +1,7 @@
-import SkinImage
-import SkinTheme
-import SkinBundles
-import Tools
+from API import SkinImage
+from API import SkinTheme
+from API import SkinBundles
+from tools import Tools
 
 _RES_PATH = '../res/'
 _RES_LOCAL_DIR_NAME = {
@@ -17,9 +17,9 @@ def main():
     for dir_name in _RES_LOCAL_DIR_NAME:
         Tools.initResDir(_RES_PATH + dir_name)
 
-    # SkinImage.start()
+    SkinImage.start()
     # SkinTheme.start()
-    SkinBundles.start()
+    # SkinBundles.start()
 
 
 if __name__ == '__main__':

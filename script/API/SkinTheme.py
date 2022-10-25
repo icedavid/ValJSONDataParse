@@ -1,4 +1,4 @@
-import Tools
+from tools import Tools
 
 _ThemeURL = "https://valorant-api.com/v1/themes"
 _ThemeURLJSONPath = "../json/theme.json"

@@ -1,5 +1,5 @@
 import os
-import Tools
+from tools import Tools
 
 _BundlesURL = "https://valorant-api.com/v1/bundles"
 _BundlesURLJSONPath = "../json/bundles.json"

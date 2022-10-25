@@ -3,8 +3,7 @@ import json
 import os
 
 from tqdm import tqdm
-
-import Tools
+from tools import Tools
 
 from logging import exception
 from pprint import pprint
