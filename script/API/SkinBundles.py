@@ -7,7 +7,13 @@ _BundlesURLJSONPath = "../json/bundles.json"
 def downLoadAllBundlesIcon(data):
     for item in data:
         if item['displayName']:
+            # 这个系列的名字特殊处理下
+            if item['displayName'] == 'Give Back // 2022':
+                item['displayName'] = 'Give Back2022'
+
             dir_path = '../res/bundles/' + item['displayName']
+
+
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path, True)
 
